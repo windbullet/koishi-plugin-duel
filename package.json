@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-duel",
-  "description": "与群友决斗，谁能做到最先开枪",
-  "version": "0.0.1",
+  "description": "与群友发起决斗！决斗时机器人会在随机时间发送“开始”，谁最先发送“开枪”谁就获得决斗的胜利！",
+  "version": "1.0.0",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -9,13 +9,16 @@
     "dist"
   ],
   "license": "MIT",
-  "scripts": {},
+    "homepage": "https://github.com/windbullet/koishi-plugin-duel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/windbullet/koishi-plugin-duel.git"
+  },
   "keywords": [
     "chatbot",
     "koishi",
     "plugin"
   ],
-  "devDependencies": {},
   "peerDependencies": {
     "koishi": "^4.18.7"
   }

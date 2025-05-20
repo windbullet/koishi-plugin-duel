@@ -1,11 +1,10 @@
-import { Context, Schema } from 'koishi'
+import { Context } from 'koishi';
+import { Config } from './types/config';
+import { registerDuelCommand } from './commands/duel';
 
-export const name = 'duel'
+export * from './types/config';
+export const name = 'duel';
 
-export interface Config {}
-
-export const Config: Schema<Config> = Schema.object({})
-
-export function apply(ctx: Context) {
-  // write your plugin here
+export function apply(ctx: Context, config: Config) {
+  registerDuelCommand(ctx, config);
 }
