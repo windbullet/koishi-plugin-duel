@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import { Game } from './game'
+import { GameConfig } from '../types/config'
 import { GameStatus } from '../types/status'
 
 interface GameMap {
@@ -9,9 +10,9 @@ interface GameMap {
 export class GameManager {
   private static gameMap: GameMap = {}
 
-  static create(challengerId: string, defenderId: string, session: any): Game {
+  static create(gameConfig: GameConfig): Game {
     const gameId = this.generateGameId()
-    const game = new Game(gameId, challengerId, defenderId, session)
+    const game = new Game(gameId, gameConfig)
     this.gameMap[gameId] = game
     return game
   }

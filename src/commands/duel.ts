@@ -1,5 +1,5 @@
 import { Context, Session, h } from 'koishi'
-import { Config } from '../types/config'
+import { Config, GameConfig } from '../types/config'
 import { GameManager } from '../game/manager'
 import { GameStatus } from '../types/status'
 
@@ -20,27 +20,33 @@ export function registerDuelCommand(ctx: Context, config: Config) {
         case GameStatus.Started: return '对方正在和别人决斗，要不捣乱捣乱？'
       }
 
-      const accepted = await requestDuel(defenderId, config.timeout, session, ctx)
+      const gameConfig: GameConfig = {
+        challengerId,
+        defenderId,
+        session,
+        config: config
+      }
 
-      if (accepted) {
-        const game = GameManager.create(challengerId, defenderId, session)
-        game.start(ctx, config)
-      } else {
+      const game = GameManager.create(gameConfig)
+
+      const accepted = await requestDuel(gameConfig)
+
+      if (!accepted) {
+        GameManager.clear(game.gameId)
         return `${h.at(challengerId)} 对方拒绝了你的决斗请求......`
       }
+
+      game.start()
     })
 }
 
-async function requestDuel(
-  defenderId: string,
-  timeout: number,
-  session: Session,
-  ctx: Context,
-): Promise<boolean> {
-  await session.send(`${h.at(defenderId)} ${session.username}向你发起了决斗，${timeout}秒内发送“接受”或“拒绝”`)
+async function requestDuel(gameConfig: GameConfig): Promise<boolean> {
+  const {session, config, defenderId} = gameConfig
+
+  await session.send(`${h.at(defenderId)} ${session.username}向你发起了决斗，${config.timeout}秒内发送“接受”或“拒绝”`)
 
   return new Promise<boolean>((resolve) => {
-    const dispose = ctx
+    const dispose = session.app
       .guild(session.guildId)
       .user(defenderId)
       .middleware(async (session, next) => {
@@ -53,9 +59,10 @@ async function requestDuel(
         }
       }, true)
 
-    ctx.setTimeout(() => {
+    session.app.setTimeout(() => {
       dispose()
       resolve(false)
-    }, timeout * 1000)
+    }, config.timeout * 1000)
   })
 }
+
